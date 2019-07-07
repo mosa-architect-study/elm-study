@@ -1,6 +1,7 @@
 import Browser
-import Html exposing (Html, button, div, text,table,tr,td,tbody)
+import Html exposing (Html, button, div, text, img )
 import Html.Events exposing (onClick)
+import Html.Attributes exposing (src,style)
 import Random
 import Maybe
 import Random.List as RandomList
@@ -50,9 +51,7 @@ view (deck,discard) =
 
 cardView : Card -> Html Msg
 cardView card = 
-    case card of 
-        Joker -> div [] [text "Joker"]
-        NomalCard {mark,number} -> div [] [text <| ((++) <| markToText <| mark) <| (++) "の" <| String.fromInt <| number]
+    img [card |> cardToChicodezaUrl |> src,style "width" "calc(100% / 13)" ] []
  
 markToText : Mark -> String
 markToText mark = 
@@ -61,6 +60,26 @@ markToText mark =
         C -> "クローバー"
         S -> "スペード"
         H -> "ハート"
+
+cardToChicodezaUrl : Card -> String
+cardToChicodezaUrl card = 
+    let 
+        markIndex : Mark -> Int
+        markIndex mark = 
+            case mark of 
+                S -> 0
+                C -> 1
+                D -> 2
+                H -> 3
+
+        cardIndex :  Int
+        cardIndex = 
+            case card of 
+                Joker -> 53
+                NomalCard {mark,number} -> (markIndex mark) * 13 + number
+    in
+        "https://chicodeza.com/wordpress/wp-content/uploads/torannpu-illust" ++ (String.fromInt cardIndex) ++  ".png"
+
 
 subscriptions : Model -> Sub Msg
 subscriptions _ = Sub.none
